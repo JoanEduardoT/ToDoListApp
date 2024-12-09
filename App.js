@@ -12,10 +12,10 @@ export default function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator initialRouteName="LoadingScreen">
-        <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ title: 'Loading...' }} /> 
-        <Stack.Screen name="TaskList" component={TaskListScreen} options={{ title: 'To-Do List' }} />
-        <Stack.Screen name="AddTask" component={AddTaskScreen} options={{ title: 'Add Task' }} />
-        <Stack.Screen name="EditTask" component={EditTaskScreen} options={{ title: 'Edit Task' }} />
+        <Stack.Screen name="LoadingScreen" component={LoadingScreen} options={{ title: 'Cargando...' }} /> 
+        <Stack.Screen name="TaskList" component={TaskListScreen} options={{ title: 'TAREAS' }} />
+        <Stack.Screen name="AddTask" component={AddTaskScreen} options={{ title: 'Agregar Tarea' }} />
+        <Stack.Screen name="EditTask" component={EditTaskScreen} options={{ title: 'Editar Tarea' }} />
       </Stack.Navigator>
     </NavigationContainer>
   );

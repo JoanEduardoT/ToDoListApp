@@ -1,22 +1,14 @@
 import React, { useState } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  ScrollView,
-  KeyboardAvoidingView,
-  Platform,
-} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Pressable, ScrollView, SafeAreaView } from 'react-native';
 import FloatingButton from '../components/FloatingButton';
 
 const TaskListScreen = ({ navigation }) => {
   const [tasks, setTasks] = useState([
-    { id: '1', name: 'A', description: '', date: '2024-12-06', completed: false },
-    { id: '2', name: 'B', description: '', date: '2024-12-07', completed: true },
-    { id: '3', name: 'C', description: '', date: '2024-12-08', completed: false },
-    { id: '4', name: 'D', description: '', date: '2024-12-10', completed: false },
-    { id: '5', name: 'E', description: '', date: '', completed: false },
+    { id: '1', name: 'A', description: '', date: '2024-12-06', time: '10:00', completed: false },
+    { id: '2', name: 'B', description: '', date: '2024-12-07', time: '14:00', completed: true },
+    { id: '3', name: 'C', description: '', date: '2024-12-08', time: '09:00', completed: false },
+    { id: '4', name: 'D', description: '', date: '2024-12-10', time: '16:00', completed: false },
+    { id: '5', name: 'E', description: '', date: '', time: '', completed: false },
   ]);
 
   const handleAddTask = (newTask) => {
@@ -82,6 +74,14 @@ const TaskListScreen = ({ navigation }) => {
     return groupedTasks;
   };
 
+  const formatTimeTo12Hour = (time) => {
+    if (!time) return '';
+    const [hours, minutes] = time.split(':').map(Number);
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const adjustedHours = hours % 12 || 12;
+    return `${adjustedHours}:${minutes.toString().padStart(2, '0')} ${period}`;
+  };
+
   const groupedTasks = groupTasksByDate();
 
   const renderSection = (title, tasks) => (
@@ -89,7 +89,7 @@ const TaskListScreen = ({ navigation }) => {
       <View key={title}>
         <Text style={styles.sectionTitle}>{title}</Text>
         {tasks.map((task) => (
-          <TouchableOpacity
+          <Pressable
             key={task.id}
             style={styles.task}
             onPress={() =>
@@ -100,48 +100,44 @@ const TaskListScreen = ({ navigation }) => {
               })
             }
           >
-            <TouchableOpacity onPress={() => toggleTaskStatus(task.id)}>
+            <Pressable onPress={() => toggleTaskStatus(task.id)}>
               <Text style={task.completed ? styles.checkMark : styles.xMark}>
                 {task.completed ? '✓' : '✗'}
               </Text>
-            </TouchableOpacity>
+            </Pressable>
             <View style={styles.taskDetails}>
               <Text style={styles.taskName}>{task.name}</Text>
-              <Text style={styles.taskDate}>{task.date || 'Sin Fecha'}</Text>
+              <Text style={styles.taskDate}>
+                {task.date || 'Sin Fecha'} {task.time && `- ${formatTimeTo12Hour(task.time)}`}
+              </Text>
             </View>
-          </TouchableOpacity>
+          </Pressable>
         ))}
       </View>
     )
   );
 
   return (
-    <KeyboardAvoidingView 
-      style={{ flex: 1 }} 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      keyboardVerticalOffset={100}
-    >
-      <ScrollView style={styles.container}>
-        <View>
-          {renderSection('ATRASADAS', groupedTasks.atrasadas)}
-          {renderSection('HOY', groupedTasks.hoy)}
-          {renderSection('MAÑANA', groupedTasks.manana)}
-          {renderSection('MAS TARDE', groupedTasks.masTarde)}
-          {renderSection('SIN FECHA', groupedTasks.sinFecha)}
-        </View>
+    <View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        {renderSection('ATRASADAS', groupedTasks.atrasadas)}
+        {renderSection('HOY', groupedTasks.hoy)}
+        {renderSection('MAÑANA', groupedTasks.manana)}
+        {renderSection('MAS TARDE', groupedTasks.masTarde)}
+        {renderSection('SIN FECHA', groupedTasks.sinFecha)}
       </ScrollView>
-      <FloatingButton 
-        onPress={() => navigation.navigate('AddTask', { onSave: handleAddTask })} 
+      <FloatingButton
+        onPress={() => navigation.navigate('AddTask', { onSave: handleAddTask })}
       />
-    </KeyboardAvoidingView>
+    </View>
   );
-  
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#f5f5f5',
+    overflow: 'scroll',
   },
   sectionTitle: {
     fontSize: 22,
